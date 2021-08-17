@@ -8,6 +8,7 @@
     <Description>Library for easily creating large random data sets</Description>
     <PackageProjectUrl>https://github.com/i7657043/LoremIpsum_Generator</PackageProjectUrl>
     <Company />
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>

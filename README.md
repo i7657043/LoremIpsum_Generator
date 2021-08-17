@@ -16,6 +16,8 @@ class SampleStructure
     public char CharOne { get; set; }
     public int IntOne { get; set; }
     public DateTime DateTimeOne { get; set; }
+    public Guid GuidOne { get; set; }
+    public double DoubleOne { get; set; }
 }
 
 List<SampleStructure> generatedBlocks = new List<SampleStructure>();
