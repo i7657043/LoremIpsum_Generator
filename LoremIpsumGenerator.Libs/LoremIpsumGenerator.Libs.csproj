@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>LoremIpsumGenerator</PackageId>
+    <Authors>Jordan Griffiths</Authors>
+    <Product>LoremIpsumGenerator.Libs</Product>
+    <Description>Library for easily creating large random data sets</Description>
+    <PackageProjectUrl>https://github.com/i7657043/LoremIpsum_Generator</PackageProjectUrl>
+    <Company />
+  </PropertyGroup>
+
+</Project>
