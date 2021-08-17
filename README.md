@@ -8,6 +8,8 @@
 
 * .Net Standard 2.0 library
 
+* Available as .nupkg file at the following URL: https://www.nuget.org/packages/LoremIpsumGenerator/
+
 #### Example Usage
 ```cs
 class SampleStructure
