@@ -38,7 +38,7 @@ namespace LoremIpsumGenerator.Libs
         public List<T> Generate<T>()
         {
             if (!setupComplete)
-                throw new InvalidOperationException("Setup must be called and a result of true returned before Generate can be called");
+                throw new InvalidOperationException("Setup must be called first");
 
             List<T> blocks = new List<T>();
 
