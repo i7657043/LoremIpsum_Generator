@@ -6,7 +6,6 @@ namespace LoremIpsumGenerator.Libs
     {
         bool CanRead { get; }
 
-        void SetupGenerator(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize, bool uniqueWords);
         List<T> Generate<T>();
         void Reset();
     }

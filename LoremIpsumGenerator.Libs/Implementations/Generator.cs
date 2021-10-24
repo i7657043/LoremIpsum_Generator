@@ -7,7 +7,7 @@ namespace LoremIpsumGenerator.Libs
     public class Generator : IGenerator
     {
         #region vars and cons
-        private bool setupComplete, uniqueWords;
+        private bool uniqueWords;
         private int wordsPerBlockLower, wordsPerBlockHigher, totalBlocks, pageSize, totalBlocksWrote;
         private ulong uniqueWordCounter = 1212;
 
@@ -21,8 +21,10 @@ namespace LoremIpsumGenerator.Libs
 
         public bool CanRead { get => totalBlocksWrote < totalBlocks; }
 
-        public Generator()
+        public Generator(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize = 0, bool uniqueWords = false)
         {
+            SetGeneratorProperties(wordsPerBlockLower, wordsPerBlockHigher, totalBlocks, pageSize, uniqueWords);
+
             _randomGenerator = new Random();
 
             _stringWriterService = new StringWriterService();
@@ -37,9 +39,6 @@ namespace LoremIpsumGenerator.Libs
 
         public List<T> Generate<T>()
         {
-            if (!setupComplete)
-                throw new InvalidOperationException("Setup must be called first");
-
             List<T> blocks = new List<T>();
 
             if (!CanRead)
@@ -55,50 +54,36 @@ namespace LoremIpsumGenerator.Libs
             return blocks;
         }
 
-        public void Reset()
-        {
-            setupComplete = false;
-
-            totalBlocksWrote = 0;
-        }
-
-        public void SetupGenerator(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize = 0, bool uniqueWords = false)
-        {            
-            CheckInputBoundaries(wordsPerBlockLower, wordsPerBlockHigher, totalBlocks, pageSize);
-
-            SetGeneratorProperties(wordsPerBlockLower, wordsPerBlockHigher, totalBlocks, pageSize, uniqueWords);
-        }
-
         private T FillBlockProperties<T>(T block)
         {
             foreach (PropertyInfo property in block.GetType().GetProperties())
             {
-                if (property != null && property.PropertyType == typeof(string))
+                if (ValidProperty<string>(property))
                 {
                     property.SetValue(block, _stringWriterService.CreateRandomStringBlock(wordsPerBlockLower, wordsPerBlockHigher, uniqueWords, _randomGenerator, ref uniqueWordCounter), null);
                 }
 
-                if (property != null && property.PropertyType == typeof(char))
+                if (ValidProperty<char>(property))
                 {
                     property.SetValue(block, _charWriterService.CreateRandomCharBlock(_randomGenerator), null);
                 }
 
-                if (property != null && ( property.PropertyType == typeof(int) || property.PropertyType == typeof(long)))
+                if (ValidProperty<int>(property) || ValidProperty<long>(property))
                 {
                     property.SetValue(block, _intWriterService.CreateRandomIntBlock(_randomGenerator), null);
                 }
 
-                if (property != null && property.PropertyType == typeof(DateTime))
+                if (ValidProperty<DateTime>(property))
                 {
                     property.SetValue(block, _datetimeWriterService.CreateRandomDateTimeBlock(_randomGenerator), null);
                 }
 
-                if (property != null && property.PropertyType == typeof(Guid))
+                if (ValidProperty<Guid>(property))
                 {
                     property.SetValue(block, _guidWriterService.CreateRandomGuidBlock(), null);
                 }
 
-                if (property != null && property.PropertyType == typeof(double))
+                if (ValidProperty<double>(property))
                 {
                     property.SetValue(block, _doubleWriterService.CreateRandomDoubleBlock(_randomGenerator), null);
                 }
@@ -107,13 +92,17 @@ namespace LoremIpsumGenerator.Libs
             return block;
         }
 
+        private static bool ValidProperty<T>(PropertyInfo property)
+        {
+            return property != null && property.PropertyType == typeof(T);
+        }
+
         private bool InsidePageThreshold(int currentPageCount)
         {
             return currentPageCount < pageSize;
         }
 
-        #region setup + config
-        private static void CheckInputBoundaries(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize)
+        private void SetGeneratorProperties(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize, bool uniqueWords)
         {
             if (wordsPerBlockLower < 0 || wordsPerBlockHigher < 0)
                 throw new ArgumentOutOfRangeException("Words per Block range arguments must be larger than 0, and less than 11473193");
@@ -123,18 +112,17 @@ namespace LoremIpsumGenerator.Libs
 
             if (pageSize < 0 || pageSize > totalBlocks)
                 throw new ArgumentOutOfRangeException("Set the Page Size to larger than -1 and smaller than the Total Blocks");
-        }
 
-        private void SetGeneratorProperties(int wordsPerBlockLower, int wordsPerBlockHigher, int totalBlocks, int pageSize, bool uniqueWords)
-        {
             this.wordsPerBlockLower = wordsPerBlockLower;
             this.wordsPerBlockHigher = wordsPerBlockHigher;
             this.totalBlocks = totalBlocks;
             this.uniqueWords = uniqueWords;
             this.pageSize = pageSize != 0 ? pageSize : totalBlocks; //If 0 passed in as page size arg then only use 1 page
-
-            setupComplete = true;
         }
-        #endregion
+
+        public void Reset()
+        {
+            totalBlocksWrote = 0;
+        }
     }
 }
